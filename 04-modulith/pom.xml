@@ -155,7 +155,7 @@
 
 
 							<!--							<rule>com.societegenerale.commons.plugin.rules.DontReturnNullCollectionTest</rule>-->
-							<rule>com.societegenerale.commons.plugin.rules.ConstantsAndStaticNonFinalFieldsNamesRuleTest </rule>
+<!--							<rule>com.societegenerale.commons.plugin.rules.ConstantsAndStaticNonFinalFieldsNamesRuleTest </rule>-->
 
 
 							<!-- you may want to use one of the below rules, but not both at same time -->

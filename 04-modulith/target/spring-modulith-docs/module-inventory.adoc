@@ -5,7 +5,7 @@
 |Bean references
 |* link:http://localhost:8080/javadoc/de/odrotbohm/examples/ddd/modulith/orders/core/ports/in/OrderManagement.html[`d.o.e.d.m.o.core.ports.in.OrderManagement`] (in Orders)
 |Events listened to
-|* link:http://localhost:8080/javadoc/de/odrotbohm/examples/ddd/modulith/orders/core/domain/model/OrderCompletedEvent.html[`d.o.e.d.m.o.core.domain.model.OrderCompletedEvent`] (async) -- Updates the inventory based on the products referred to by the line items in the Order that was just completed.
-
+|
+* link:http://localhost:8080/javadoc/de/odrotbohm/examples/ddd/modulith/orders/core/domain/model/OrderCompletedEvent.html[`d.o.e.d.m.o.core.domain.model.OrderCompletedEvent`] (async) -- Updates the inventory based on the products referred to by the line items in the Order that was just completed.
 * link:http://localhost:8080/javadoc/de/odrotbohm/examples/ddd/modulith/catalog/core/domain/model/ProductAddedEvent.html[`d.o.e.d.m.c.core.domain.model.ProductAddedEvent`] (async) -- Initializes the Inventory with a stock of zero for the Product just added.
 |===

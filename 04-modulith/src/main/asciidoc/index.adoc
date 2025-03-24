@@ -14,3 +14,4 @@ include::{generated-docs}/module-orders.adoc[]
 == Inventory
 plantuml::{generated-docs}/module-inventory.puml[,,format=svg]
 include::{generated-docs}/module-inventory.adoc[]
+S

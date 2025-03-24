@@ -62,8 +62,4 @@ class InventoryListener {
 		inventoryEventListenerHandler.handleOrderCompletedEvent(event);
 	}
 
-	@EventListener
-	void onOutOfStock(OutOfStockEvent event) {
-		inventoryEventListenerHandler.handleOutOfStockEvent(event);
-	}
 }

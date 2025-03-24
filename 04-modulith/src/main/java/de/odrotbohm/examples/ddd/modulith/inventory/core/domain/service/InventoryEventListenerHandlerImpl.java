@@ -15,6 +15,7 @@ import de.odrotbohm.examples.ddd.modulith.orders.core.ports.in.dto.result.OrderI
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,5 +80,11 @@ public class InventoryEventListenerHandlerImpl implements InventoryEventListener
         log.info("Product {} out of stock! Current overdraw: {}.", productId, stock);
 
         throw new InsufficientStockException(productId, stock);
+    }
+
+
+    @EventListener
+    void onOutOfStock(OutOfStockEvent event) {
+        this.handleOutOfStockEvent(event);
     }
 }
