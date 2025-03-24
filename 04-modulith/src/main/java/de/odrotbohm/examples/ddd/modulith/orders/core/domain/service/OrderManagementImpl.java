@@ -1,0 +1,162 @@
+/*
+
+ * Copyright 2017-2022 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package de.odrotbohm.examples.ddd.modulith.orders.core.domain.service;
+
+import de.odrotbohm.examples.ddd.modulith.orders.core.domain.model.LineItemEntity;
+import de.odrotbohm.examples.ddd.modulith.orders.core.domain.model.OrderAggregate;
+import de.odrotbohm.examples.ddd.modulith.orders.core.ports.in.OrderManagement;
+import de.odrotbohm.examples.ddd.modulith.orders.core.ports.in.dto.command.LineItemInCommandDTO;
+import de.odrotbohm.examples.ddd.modulith.orders.core.ports.in.dto.command.OrderInCommandDTO;
+import de.odrotbohm.examples.ddd.modulith.orders.core.ports.in.dto.result.LineItemInResultDTO;
+import de.odrotbohm.examples.ddd.modulith.orders.core.ports.in.dto.result.OrderInResultDTO;
+import de.odrotbohm.examples.ddd.modulith.orders.core.ports.out.EventPublisher;
+import de.odrotbohm.examples.ddd.modulith.orders.core.ports.out.OrderPersistence;
+import de.odrotbohm.examples.ddd.modulith.orders.core.ports.out.dto.command.LineItemOutCommandDTO;
+import de.odrotbohm.examples.ddd.modulith.orders.core.ports.out.dto.command.OrderOutCommandDTO;
+import de.odrotbohm.examples.ddd.modulith.orders.core.ports.out.dto.response.LineItemOutResultDTO;
+import de.odrotbohm.examples.ddd.modulith.orders.core.ports.out.dto.response.OrderOutResultDTO;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.jmolecules.event.types.DomainEvent;
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
+
+/**
+ * @author Oliver Drotbohm
+ */
+@Service
+@Transactional
+@RequiredArgsConstructor
+@Slf4j
+class OrderManagementImpl implements OrderManagement {
+
+	private final OrderPersistence ordersPersistence;
+	private final OrderProperties orderProperties;
+	private final EventPublisher<DomainEvent> eventPublisher;
+	private final ModelMapper modelMapper;
+
+
+	/*
+	 * (non-Javadoc)
+	 * @see de.odrotbohm.examples.ddd.moduliths.orders.OrderManagement#createOrder()
+	 */
+	@Override
+	public OrderInResultDTO createOrderDefault() {
+		log.info(orderProperties.getOrderSystem());
+		OrderAggregate orderAggregate = new OrderAggregate();
+		this.createOrder(orderAggregate);
+		OrderInResultDTO orderInResultDTO = getOrderInResultDTO(orderAggregate);
+		return orderInResultDTO;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see de.odrotbohm.examples.ddd.moduliths.orders.OrderManagement#findOrder(de.odrotbohm.examples.ddd.moduliths.orders.Order.OrderIdentifier)
+	 */
+	@Override
+	public OrderInResultDTO findOrder(UUID identifier) {
+		OrderOutResultDTO orderOutResultDTO = ordersPersistence.findById(identifier).orElse(null);
+		OrderAggregate orderAggregate = getOrderAggregate(orderOutResultDTO);
+		log.info("Found aggregate order: " + orderAggregate.getId());
+		OrderInResultDTO orderInResultDTO = getOrderInResultDTO(orderAggregate);
+		return orderInResultDTO;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see de.odrotbohm.examples.ddd.moduliths.orders.OrderManagement#complete(de.odrotbohm.examples.ddd.moduliths.orders.Order)
+	 */
+	@Override
+	public OrderInResultDTO complete(OrderInCommandDTO orderInDTO) {
+		//convert from request DTO to internal model aggregate
+		OrderAggregate orderAggregate = getOrderAggregate(orderInDTO);
+		//internal processing of the aggregate
+		orderAggregate.complete();
+		log.info("Order completed:" + orderAggregate.getStatus());
+		createOrder(orderAggregate);
+		eventPublisher.publish(orderAggregate.completedEvent());
+		log.info("Published OrderCompletedEvent for order {}.", orderInDTO.getId());
+		//convert the internal aggregate to response DTO
+		OrderInResultDTO orderInResultDTO = getOrderInResultDTO(orderAggregate);
+		return orderInResultDTO;
+	}
+
+	private void createOrder(OrderAggregate orderAggregate){
+		OrderOutCommandDTO orderOutRequestDTO = getOrderOutCommandDTO(orderAggregate);
+		log.info("Dummy log entry to justify usage of the order properties: " + orderProperties.getOrderSystem());
+		ordersPersistence.save(orderOutRequestDTO);
+	}
+
+	@Override
+	public OrderInResultDTO createOrder(OrderInCommandDTO orderInDTO) {
+		//convert from IN request DTO to internal model aggregate
+		OrderAggregate orderAggregate = getOrderAggregate(orderInDTO);
+
+		//internal processing of the aggregate
+		log.info("Found aggregate order: " + orderAggregate.getId());
+
+		//convert the internal aggregate to OUT request DTO
+		OrderOutCommandDTO orderOutCommandDTO = getOrderOutCommandDTO(orderAggregate);
+		log.info("Dummy log entry to justify usage of the order properties: " + orderProperties.getOrderSystem());
+		ordersPersistence.save(orderOutCommandDTO);
+
+		//convert the OUT response DTO to internal model aggregate
+		//nothing to do here
+
+		//convert the internal aggregate to IN response DTO
+		OrderInResultDTO orderInResultDTO = getOrderInResultDTO(orderAggregate);
+		return orderInResultDTO;
+	}
+
+	private OrderOutCommandDTO getOrderOutCommandDTO(OrderAggregate orderAggregate) {
+		modelMapper.typeMap(OrderAggregate.class, OrderOutCommandDTO.class)
+				.addMappings(mapper -> mapper.using(ctx -> OrderOutCommandDTO.Status.valueOf(((OrderAggregate.Status) ctx.getSource()).name()))
+						.map(OrderAggregate::getStatus, OrderOutCommandDTO::setStatus));
+		modelMapper.typeMap(LineItemInCommandDTO.class, LineItemOutCommandDTO.class);
+		OrderOutCommandDTO orderOutRequestDTO = modelMapper.map(orderAggregate, OrderOutCommandDTO.class);
+		return orderOutRequestDTO;
+	}
+
+	private OrderInResultDTO getOrderInResultDTO(OrderAggregate orderAggregate) {
+		modelMapper.typeMap(OrderAggregate.class, OrderInResultDTO.class).addMappings(mapper -> mapper.using(ctx -> OrderInResultDTO.Status.valueOf(((OrderAggregate.Status) ctx.getSource()).name()))
+				.map(OrderAggregate::getStatus, OrderInResultDTO::setStatus));
+		modelMapper.typeMap(LineItemEntity.class, LineItemInResultDTO.class);
+		OrderInResultDTO orderOutDTO = modelMapper.map(orderAggregate, OrderInResultDTO.class);
+		return orderOutDTO;
+	}
+
+	private OrderAggregate getOrderAggregate(OrderInCommandDTO orderInDTO) {
+		modelMapper.typeMap(OrderInCommandDTO.class, OrderAggregate.class)
+				.addMappings(mapper -> mapper.using(ctx -> OrderAggregate.Status.valueOf(((OrderInCommandDTO.Status) ctx.getSource()).name()))
+						.map(OrderInCommandDTO::getStatus, OrderAggregate::setStatus));
+		modelMapper.typeMap(LineItemInCommandDTO.class, LineItemEntity.class);
+		OrderAggregate orderAggregate = modelMapper.map(orderInDTO, OrderAggregate.class);
+		return orderAggregate;
+	}
+
+	private OrderAggregate getOrderAggregate(OrderOutResultDTO orderOutResponseDTO) {
+		modelMapper.typeMap(OrderOutResultDTO.class, OrderAggregate.class)
+				.addMappings(mapper -> mapper.using(ctx -> OrderAggregate.Status.valueOf(((OrderOutResultDTO.Status) ctx.getSource()).name()))
+						.map(OrderOutResultDTO::getStatus, OrderAggregate::setStatus));
+		modelMapper.typeMap(LineItemOutResultDTO.class, LineItemEntity.class);
+		OrderAggregate orderAggregate = modelMapper.map(orderOutResponseDTO, OrderAggregate.class);
+		return orderAggregate;
+	}
+}

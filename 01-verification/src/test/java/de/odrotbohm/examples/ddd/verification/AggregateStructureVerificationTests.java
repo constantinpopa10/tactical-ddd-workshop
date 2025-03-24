@@ -15,14 +15,15 @@
  */
 package de.odrotbohm.examples.ddd.verification;
 
-import static org.junit.jupiter.api.Assumptions.*;
-
-import org.jmolecules.archunit.JMoleculesDddRules;
-
+import com.tngtech.archunit.ArchConfiguration;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
+import org.jmolecules.archunit.JMoleculesDddRules;
+import org.junit.jupiter.api.BeforeAll;
+
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * @author Oliver Drotbohm
@@ -31,6 +32,13 @@ import com.tngtech.archunit.junit.ArchTest;
 		packagesOf = AggregateStructureVerificationTests.class,
 		importOptions = ImportOption.DoNotIncludeTests.class)
 class AggregateStructureVerificationTests {
+
+
+    @BeforeAll
+    static void setUp() {
+        ArchConfiguration.get().setProperty("verbose", "true");
+    }
+
 
 	/**
 	 * <ol>

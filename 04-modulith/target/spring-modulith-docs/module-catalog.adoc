@@ -1,0 +1,11 @@
+[%autowidth.stretch, cols="h,a"]
+|===
+|Base package
+|`de.odrotbohm.examples.ddd.modulith.catalog`
+|Aggregate roots
+|* link:http://localhost:8080/javadoc/de/odrotbohm/examples/ddd/modulith/catalog/core/domain/model/Product.html[`d.o.e.d.m.c.core.domain.model.Product`]
+|Published events
+|* link:http://localhost:8080/javadoc/de/odrotbohm/examples/ddd/modulith/catalog/core/domain/model/ProductAddedEvent.html[`d.o.e.d.m.c.core.domain.model.ProductAddedEvent`] created by:
+** `d.o.e.d.m.c.core.domain.model.Product.getEvent()`
+
+|===

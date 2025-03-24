@@ -17,12 +17,19 @@ package de.odrotbohm.examples.ddd.modulith;
 
 import java.io.IOException;
 
+import com.tngtech.archunit.core.importer.ClassFileImporter;
+import com.tngtech.archunit.lang.ArchRule;
+import com.tngtech.archunit.library.Architectures;
+import org.jmolecules.archunit.JMoleculesArchitectureRules;
 import org.junit.jupiter.api.Test;
 import org.springframework.modulith.core.ApplicationModules;
 import org.springframework.modulith.docs.Documenter;
 import org.springframework.modulith.docs.Documenter.CanvasOptions;
 import org.springframework.modulith.docs.Documenter.DiagramOptions;
 import org.springframework.modulith.docs.Documenter.DiagramOptions.DiagramStyle;
+
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import static org.jmolecules.archunit.JMoleculesArchitectureRules.*;
 
 /**
  * @author Oliver Drotbohm
@@ -33,6 +40,7 @@ class DocumentationTests {
 	void createsDocumentation() throws IOException {
 
 		var modules = ApplicationModules.of(ModulithApplication.class);
+		modules.verify();
 
 		var canvasOptions = CanvasOptions.defaults()
 				.withApiBase("http://localhost:8080/javadoc");
@@ -43,4 +51,17 @@ class DocumentationTests {
 		new Documenter(modules)
 				.writeDocumentation(diagramOptions, canvasOptions);
 	}
+
+	@Test
+	void testHexagonal() {
+		String targetPackage = "de.odrotbohm.examples.ddd.modulith.orders";
+
+		var importedClasses = new ClassFileImporter().importPackages(targetPackage);
+
+		//allows the APPLICATION(model+service) to be invoked by the adapters using LENIENTS
+		ArchRule hexagonalRule = JMoleculesArchitectureRules.ensureHexagonal(VerificationDepth.LENIENT);
+
+		hexagonalRule.check(importedClasses);
+	}
+
 }

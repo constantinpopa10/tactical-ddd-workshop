@@ -70,6 +70,7 @@
 			<artifactId>jmolecules-starter-ddd</artifactId>
 		</dependency>
 
+
 		<dependency>
 			<groupId>org.jmolecules.integrations</groupId>
 			<artifactId>jmolecules-jackson</artifactId>
@@ -82,9 +83,30 @@
 			<scope>runtime</scope>
 		</dependency>
 
+<!--		<dependency>-->
+<!--			<groupId>org.jmolecules.integrations</groupId>-->
+<!--			<artifactId>jmolecules-bytebuddy-nodep</artifactId>-->
+<!--		</dependency>-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jmolecules</groupId>
+			<artifactId>jmolecules-hexagonal-architecture</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.jmolecules.integrations</groupId>
-			<artifactId>jmolecules-bytebuddy-nodep</artifactId>
+			<artifactId>jmolecules-archunit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.modelmapper</groupId>
+			<artifactId>modelmapper</artifactId>
+			<version>3.2.2</version>
 		</dependency>
 
 	</dependencies>
@@ -92,28 +114,113 @@
 	<build>
 		<plugins>
 
+<!--			<plugin>-->
+<!--				<groupId>net.bytebuddy</groupId>-->
+<!--				<artifactId>byte-buddy-maven-plugin</artifactId>-->
+<!--				<version>${bytebuddy.version}</version>-->
+<!--				<executions>-->
+<!--					<execution>-->
+<!--						<goals>-->
+<!--							<goal>transform-extended</goal>-->
+<!--						</goals>-->
+<!--					</execution>-->
+<!--				</executions>-->
+<!--				<configuration>-->
+<!--					<classPathDiscovery>true</classPathDiscovery>-->
+<!--				</configuration>-->
+<!--			</plugin>-->
+
+
+<!--				Enable custom Javadoc Doclet to extract Javadoc into a JSON File-->
+<!--				so that it can be included in generated documentation.-->
+
 			<plugin>
-				<groupId>net.bytebuddy</groupId>
-				<artifactId>byte-buddy-maven-plugin</artifactId>
-				<version>${bytebuddy.version}</version>
+				<groupId>com.societegenerale.commons</groupId>
+				<artifactId>arch-unit-maven-plugin</artifactId>
+				<version>4.0.2</version>
+				<configuration>
+					<properties>
+						<archunit.propertyName>propertyValue</archunit.propertyName>
+					</properties>
+					<rules>
+						<preConfiguredRules>
+							<rule>com.societegenerale.commons.plugin.rules.NoStandardStreamRuleTest</rule>
+<!--							<rule>com.societegenerale.commons.plugin.rules.NoJunitAssertRuleTest</rule>-->
+							<rule>com.societegenerale.commons.plugin.rules.NoJodaTimeRuleTest</rule>
+							<rule>com.societegenerale.commons.plugin.rules.NoJavaUtilDateRuleTest</rule>
+							<rule>com.societegenerale.commons.plugin.rules.NoPowerMockRuleTest</rule>
+							<rule>com.societegenerale.commons.plugin.rules.NoPrefixForInterfacesRuleTest</rule>
+							<rule>com.societegenerale.commons.plugin.rules.NoPublicFieldRuleTest</rule>
+<!--							<rule>com.societegenerale.commons.plugin.rules.HexagonalArchitectureTest</rule>-->
+
+
+							<!--							<rule>com.societegenerale.commons.plugin.rules.DontReturnNullCollectionTest</rule>-->
+							<rule>com.societegenerale.commons.plugin.rules.ConstantsAndStaticNonFinalFieldsNamesRuleTest </rule>
+
+
+							<!-- you may want to use one of the below rules, but not both at same time -->
+							<rule>com.societegenerale.commons.plugin.rules.NoTestIgnoreRuleTest</rule>
+<!--							<rule>com.societegenerale.commons.plugin.rules.NoTestIgnoreWithoutCommentRuleTest</rule>-->
+
+							<rule>com.societegenerale.commons.plugin.rules.NoInjectedFieldTest</rule>
+<!--							<rule>com.societegenerale.commons.plugin.rules.NoAutowiredFieldTest</rule>-->
+						</preConfiguredRules>
+					</rules>
+				</configuration>
 				<executions>
 					<execution>
+						<phase>test</phase>
 						<goals>
-							<goal>transform-extended</goal>
+							<goal>arch-test</goal>
 						</goals>
 					</execution>
 				</executions>
+				<dependencies>
+					<dependency>
+						<!--
+                             A version of the core jar is included by default, but don't hesitate
+                             to upgrade to a later one if you need :
+                             we will be able to add rules and behavior in arch-unit-build-plugin-core
+                             without releasing a new version of arch-unit-maven-plugin
+                         -->
+						<groupId>com.societegenerale.commons</groupId>
+						<artifactId>arch-unit-build-plugin-core</artifactId>
+						<version>4.0.1</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>com.github.davidmoten</groupId>
+				<artifactId>plantuml-maven-plugin</artifactId>
+				<version>0.2.13</version>
+				<executions>
+					<execution>
+						<id>generate-diagrams</id>
+						<phase>install</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+
 				<configuration>
-					<classPathDiscovery>true</classPathDiscovery>
+					<sources>
+						<directory>${project.basedir}/target/spring-modulith-docs</directory>
+						<includes>
+							<include>*.puml</include>
+						</includes>
+						<excludes>
+							<exclude>**/ignore-me.puml</exclude>
+						</excludes>
+					</sources>
+					<outputDirectory>${project.basedir}/src/main/asciidoc/images</outputDirectory>
+					<formats>
+						<format>png</format>
+						<format>svg</format>
+					</formats>
+					<preserveDirectoryStructure>false</preserveDirectoryStructure>
 				</configuration>
 			</plugin>
-
-			<!--
-
-				Enable custom Javadoc Doclet to extract Javadoc into a JSON File
-				so that it can be included in generated documentation.
-
-
 			<plugin>
 				<groupId>org.projectlombok</groupId>
 				<artifactId>lombok-maven-plugin</artifactId>
@@ -139,7 +246,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			-->
 
 		</plugins>
 	</build>

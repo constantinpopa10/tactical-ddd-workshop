@@ -1,0 +1,29 @@
+@startuml
+set separator none
+
+top to bottom direction
+
+skinparam {
+  arrowFontSize 10
+  defaultTextAlignment center
+  wrapWidth 200
+  maxMessageSize 100
+  componentStyle uml1
+}
+
+hide stereotype
+
+skinparam component<<ModulithApplication.ModulithApplication.Orders>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam rectangle<<ModulithApplication.ModulithApplication>> {
+  BorderColor #9a9a9a
+  FontColor #9a9a9a
+  shadowing false
+}
+
+component "==Orders\n<size:10>[Component: Module]</size>" <<ModulithApplication.ModulithApplication.Orders>> as ModulithApplication.ModulithApplication.Orders
+@enduml

@@ -24,7 +24,7 @@ While this primarily makes our code more expressive and allows verification show
 ** Remove the corresponding type and field JPA annotations:
 ** Also, get rid of all Lombok annotations that created code to satisfy JPA requirements, such as no-argument constructors.
 ** Remove the `Serializable` implementation from all `Identifier` implementations (including the declaration of the `serialVersionUID` field).
-** Finally, replace the `CustomerId customer` property in `Order` with `Association<Customer, CustomerId>` and replace the assignment with a call to `Association.forId(…)`.
+** Finally, replace the `CustomerId customer` property in `OrderTable` with `Association<Customer, CustomerId>` and replace the assignment with a call to `Association.forId(…)`.
 . Execute `PersistentModelTests` to verify everything still works as expected.
 
 == Replace Identifiers and Value Objects with Java Records

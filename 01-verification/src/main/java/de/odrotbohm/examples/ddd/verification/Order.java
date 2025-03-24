@@ -19,6 +19,7 @@ import lombok.Getter;
 
 import java.util.UUID;
 
+import org.jmolecules.ddd.types.AggregateRoot;
 import org.jmolecules.ddd.types.Identifier;
 
 /**
@@ -26,7 +27,7 @@ import org.jmolecules.ddd.types.Identifier;
  */
 @Getter
 // @AggregateRoot
-class Order /* implements AggregateRoot<Order, OrderId> */ {
+class Order  implements AggregateRoot<Order, Order.OrderId> {
 
 	private final /* @Identity */ OrderId id;
 	private final Customer customer;

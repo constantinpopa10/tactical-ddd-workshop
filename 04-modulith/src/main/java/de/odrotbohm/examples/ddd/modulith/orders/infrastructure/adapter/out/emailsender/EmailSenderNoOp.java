@@ -1,0 +1,52 @@
+/*
+ * Copyright 2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package de.odrotbohm.examples.ddd.modulith.orders.infrastructure.adapter.out.emailsender;
+
+import de.odrotbohm.examples.ddd.modulith.orders.core.ports.out.EmailSender;
+import de.odrotbohm.examples.ddd.modulith.orders.core.ports.out.dto.command.OrderCompletedEventOutDTO;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+
+@Setter
+@Slf4j
+@Component
+public class EmailSenderNoOp implements EmailSender {
+
+	private boolean fail = false;
+
+	/**
+	 * Sends out an email to the customer who placed the order on their completion.
+	 *
+	 * @param event
+	 */
+	@Override
+	public void sendEmail(OrderCompletedEventOutDTO event) {
+		log.info("Sending email for order {}.", event.getOrderIdentifier());
+
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException o_O) {}
+
+		if (fail) {
+			log.info("Failing to sent email for order {}.", event.getOrderIdentifier());
+			throw new RuntimeException("(╯°□°）╯︵ ┻━┻");
+		}
+
+		log.info("Successfully sent email for order {}.", event.getOrderIdentifier());
+	}
+}

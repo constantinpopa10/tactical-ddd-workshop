@@ -1,0 +1,20 @@
+[%autowidth.stretch, cols="h,a"]
+|===
+|Base package
+|`de.odrotbohm.examples.ddd.modulith.orders`
+|Spring components
+|_Application_
+
+* link:http://localhost:8080/javadoc/de/odrotbohm/examples/ddd/modulith/orders/core/ports/in/OrderEventHandler.html[`d.o.e.d.m.o.core.ports.in.OrderEventHandler`] (via `d.o.e.d.m.o.core.domain.service.OrderEventHandlerImpl`)
+* link:http://localhost:8080/javadoc/de/odrotbohm/examples/ddd/modulith/orders/core/ports/in/OrderManagement.html[`d.o.e.d.m.o.core.ports.in.OrderManagement`] (via `d.o.e.d.m.o.core.domain.service.OrderManagementImpl`)
+|Aggregate roots
+|* link:http://localhost:8080/javadoc/de/odrotbohm/examples/ddd/modulith/orders/core/domain/model/OrderAggregate.html[`d.o.e.d.m.o.core.domain.model.OrderAggregate`]
+|Published events
+|* link:http://localhost:8080/javadoc/de/odrotbohm/examples/ddd/modulith/orders/core/domain/model/OrderCompletedEvent.html[`d.o.e.d.m.o.core.domain.model.OrderCompletedEvent`] created by:
+** `d.o.e.d.m.o.core.domain.model.OrderAggregate.completedEvent()`
+
+|Events listened to
+|* link:http://localhost:8080/javadoc/de/odrotbohm/examples/ddd/modulith/orders/core/domain/model/OrderCompletedEvent.html[`d.o.e.d.m.o.core.domain.model.OrderCompletedEvent`] (async) -- Sends out an email to the customer who placed the order on their completion.
+|Properties
+|* `myapp.module.order-system` -- `java.lang.String`. OrderSystem
+|===

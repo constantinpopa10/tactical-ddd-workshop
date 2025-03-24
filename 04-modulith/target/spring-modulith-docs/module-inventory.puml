@@ -1,0 +1,46 @@
+@startuml
+set separator none
+
+top to bottom direction
+
+skinparam {
+  arrowFontSize 10
+  defaultTextAlignment center
+  wrapWidth 200
+  maxMessageSize 100
+  componentStyle uml1
+}
+
+hide stereotype
+
+skinparam component<<ModulithApplication.ModulithApplication.Catalog>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam component<<ModulithApplication.ModulithApplication.Inventory>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam component<<ModulithApplication.ModulithApplication.Orders>> {
+  BackgroundColor #dddddd
+  FontColor #000000
+  BorderColor #9a9a9a
+  shadowing false
+}
+skinparam rectangle<<ModulithApplication.ModulithApplication>> {
+  BorderColor #9a9a9a
+  FontColor #9a9a9a
+  shadowing false
+}
+
+component "==Catalog\n<size:10>[Component: Module]</size>" <<ModulithApplication.ModulithApplication.Catalog>> as ModulithApplication.ModulithApplication.Catalog
+component "==Inventory\n<size:10>[Component: Module]</size>" <<ModulithApplication.ModulithApplication.Inventory>> as ModulithApplication.ModulithApplication.Inventory
+component "==Orders\n<size:10>[Component: Module]</size>" <<ModulithApplication.ModulithApplication.Orders>> as ModulithApplication.ModulithApplication.Orders
+ModulithApplication.ModulithApplication.Inventory .[#707070,thickness=2].> ModulithApplication.ModulithApplication.Orders : "<color:#707070>uses"
+ModulithApplication.ModulithApplication.Inventory .[#707070,thickness=2].> ModulithApplication.ModulithApplication.Orders : "<color:#707070>listens to"
+ModulithApplication.ModulithApplication.Inventory .[#707070,thickness=2].> ModulithApplication.ModulithApplication.Catalog : "<color:#707070>listens to"
+@enduml
