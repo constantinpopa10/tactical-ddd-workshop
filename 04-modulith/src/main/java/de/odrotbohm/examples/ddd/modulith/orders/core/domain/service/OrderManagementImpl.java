@@ -127,43 +127,6 @@ class OrderManagementImpl implements OrderManagement {
 	}
 
 
-
-//	private OrderOutCommandDTO getOrderOutCommandDTO(OrderAggregate orderAggregate) {
-//		modelMapper.typeMap(OrderAggregate.class, OrderOutCommandDTO.class)
-//				.addMappings(mapper -> mapper.using(ctx -> OrderOutCommandDTO.Status.valueOf(((OrderAggregate.Status) ctx.getSource()).name()))
-//						.map(OrderAggregate::getStatus, OrderOutCommandDTO::setStatus));
-//		modelMapper.typeMap(LineItemInCommandDTO.class, LineItemOutCommandDTO.class);
-//		OrderOutCommandDTO orderOutRequestDTO = modelMapper.map(orderAggregate, OrderOutCommandDTO.class);
-//		return orderOutRequestDTO;
-//	}
-//
-//	private OrderInResultDTO getOrderInResultDTO(OrderAggregate orderAggregate) {
-//		modelMapper.typeMap(OrderAggregate.class, OrderInResultDTO.class).addMappings(mapper -> mapper.using(ctx -> OrderInResultDTO.Status.valueOf(((OrderAggregate.Status) ctx.getSource()).name()))
-//				.map(OrderAggregate::getStatus, OrderInResultDTO::setStatus));
-//		modelMapper.typeMap(LineItemEntity.class, LineItemInResultDTO.class);
-//		OrderInResultDTO orderOutDTO = modelMapper.map(orderAggregate, OrderInResultDTO.class);
-//		return orderOutDTO;
-//	}
-//
-//	private OrderAggregate getOrderAggregate(OrderInCommandDTO orderInDTO) {
-//		modelMapper.typeMap(OrderInCommandDTO.class, OrderAggregate.class)
-//				.addMappings(mapper -> mapper.using(ctx -> OrderAggregate.Status.valueOf(((OrderInCommandDTO.Status) ctx.getSource()).name()))
-//						.map(OrderInCommandDTO::getStatus, OrderAggregate::setStatus));
-//		modelMapper.typeMap(LineItemInCommandDTO.class, LineItemEntity.class);
-//		OrderAggregate orderAggregate = modelMapper.map(orderInDTO, OrderAggregate.class);
-//		return orderAggregate;
-//	}
-//
-//	private OrderAggregate getOrderAggregate(OrderOutResultDTO orderOutResponseDTO) {
-//		modelMapper.typeMap(OrderOutResultDTO.class, OrderAggregate.class)
-//				.addMappings(mapper -> mapper.using(ctx -> OrderAggregate.Status.valueOf(((OrderOutResultDTO.Status) ctx.getSource()).name()))
-//						.map(OrderOutResultDTO::getStatus, OrderAggregate::setStatus));
-//		modelMapper.typeMap(LineItemOutResultDTO.class, LineItemEntity.class);
-//		OrderAggregate orderAggregate = modelMapper.map(orderOutResponseDTO, OrderAggregate.class);
-//		return orderAggregate;
-//	}
-
-
 	private OrderOutCommandDTO getOrderOutCommandDTO(OrderAggregate orderAggregate) {
 		modelMapper.typeMap(LineItemInCommandDTO.class, LineItemOutCommandDTO.class);
 		return this.mapWithStatus(orderAggregate,
@@ -206,7 +169,7 @@ class OrderManagementImpl implements OrderManagement {
 					}
 				}).map(src -> {
 					try {
-						return ((Object) src).getClass().getMethod("getStatus").invoke(src);
+						return src.getClass().getMethod("getStatus").invoke(src);
 					} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
 						throw new RuntimeException(e);
 					}
